@@ -6,6 +6,10 @@ My program will take infmormation about a users music library and add each song 
 
 Phase 2: 
 
+#Summary
+
+The program I made works to store the users music library in a binary search tree. You can add songs individually or import an entire iTunes Library. Each song is stored in a node with its name, the artists name and the album name. The library can be printed and you can search for albums songs and artists as well as count the number of songs.
+
 #Instructions for Starting Program:
 
 1.) Along with this README file, 
@@ -68,6 +72,9 @@ The program SHOULD work properly on all operating systems but with that being sa
 
 #Open Issues
 I could not figure out how to get the program to print “Song not found” when the findSong() function doesn't find a song in the tree and “Album not found” when the findAlbum() function doesn't find an album.
+
+#Group Members:
+Tanner Quigley
 
 
 
