@@ -6,7 +6,7 @@
 #include <fstream>
 #include <algorithm>
 #include "MusicTree.h"
-#include <sstream> 
+#include <sstream>
 
 using namespace std;
 using namespace rapidxml;
@@ -17,24 +17,24 @@ MusicTree::MusicTree()
 	roo = NULL;
 }
 
- 
+
 void MusicTree::addSongNode(string artist, string name, string album)
 {
 	SongNode *temp = roo;
   SongNode *node = new SongNode(artist, name, album);
 	SongNode *parent = temp;
-	 
+
 	while(temp != NULL)
 	{
 		parent = temp;
 		string str1 = node->artist;
 		string str2 = temp->artist;
-		
+
 		if(str1.compare(str2) < 0)
 	  {
 	  	temp = temp->left;
 	  }
-	  else  
+	  else
 	  {
 	  	temp = temp->right;
 	  }
@@ -49,13 +49,13 @@ void MusicTree::addSongNode(string artist, string name, string album)
 	    parent->left = node;
 	    node->parent = parent;
 	    //cout << "inserted: " << node->name << " left child of: " << parent->name <<endl;
-	} 
+	}
 	else {
-	    parent->right = node; 
+	    parent->right = node;
 	    node->parent = parent;
 	    //cout << "inserted: " << node->name << " right child of: " << parent->name <<endl;
 	}
-	
+
 }
 
 //Checks for a specific Artist in the Tree by comparing the search str to each node then continuing left or right after comparison until found
@@ -71,8 +71,8 @@ void MusicTree::checkForArtist(string artist)
 		else if (node->artist.compare(artist) > 0)
 		{
 		  node = node->left;
-		} 
-		else 
+		}
+		else
 		{
 			cout << "Songs by " << node->artist << " found in the Music Tree"<< endl;
 			return;
@@ -90,9 +90,9 @@ void MusicTree::printMusicLibrary()
 //Private function that goes through and counts each element of the Tree Recursivly starting at the paramater node.
 int MusicTree::countSongNodes(SongNode *node)
 {
-	if(node == NULL) { 
+	if(node == NULL) {
 		return 0;
-	} else { 
+	} else {
 		return countSongNodes(node->left) + countSongNodes(node->right) + 1;
 	}
 }
@@ -117,11 +117,16 @@ void MusicTree::printMusicLibrary(SongNode *node)
 //Pulic Function to find song with root as param
 void MusicTree::findSong(string name)
 {
-	findSong(roo,name);
+	bool found;
+	found = findSong(roo,name);
+	if(found != true)
+    {
+        cout<<"Song Not Found"<<endl;
+    }
 }
 
 //Recursive Private function to find song in Tree, looks at entire tree
-void MusicTree::findSong(SongNode *node, string name)
+bool MusicTree::findSong(SongNode *node, string name)
 {
 	if(node)
 	{
@@ -132,33 +137,40 @@ void MusicTree::findSong(SongNode *node, string name)
 			cout << "Artist:" << node->artist << endl;
 			cout << "Name:" << node->name << endl;
 			cout << "Album:" << node->album << endl;
-			return;
+			return true;
 		}
 		else
 		{
-			findSong(node->left, name);
+            findSong(node->left, name);
 			findSong(node->right, name);
 		}
 	}
+	return false;
 }
 
 //Pulic Function that calls the private with root as node param
 void MusicTree::printAlbum(string album)
 {
-	printAlbum(roo,album);
+    bool found;
+	found = printAlbum(roo,album);
+	if(found != true)
+    {
+        cout<<"Album Not Found"<<endl;
+    }
 }
 
 //Private recursive function to search entire Tree for nodes with matching album name
-void MusicTree::printAlbum(SongNode *node, string album)
+bool MusicTree::printAlbum(SongNode *node, string album)
 {
 	if(node)
 	{
 		if(node->album == album)
-		{			
+		{
 			cout << "-> " << node->name << " by ";
 			cout << node->artist << endl;
 			printAlbum(node->left, album);
 			printAlbum(node->right, album);
+			return true;
 		}
 		else
 		{
@@ -166,42 +178,43 @@ void MusicTree::printAlbum(SongNode *node, string album)
 			printAlbum(node->right, album);
 		}
 	}
+	return false;
 }
 
 //Uses Rapid XML to parse XML Library File into individual Song Nodes before adding them to the Tree
 void MusicTree::populateXML()
 {
-	//Accsess Document using RAPIDXML	
-  xml_document<> doc; 
-  file<> xmlFile("iTunesMusicLibrary.xml"); 
+	//Accsess Document using RAPIDXML
+  xml_document<> doc;
+  file<> xmlFile("iTunesMusicLibrary.xml");
   doc.parse<0>(xmlFile.data());
-		
+
 	//Gets through level of Nodes to get to media data
 	xml_node<> *lib = doc.first_node("plist");
 	xml_node<> *dict = lib->first_node("dict");
 	xml_node<> *dict1 = dict->first_node("dict");
-	
+
 	//Counts number of songs added
 	int count = 0;
-	
+
 	//Loops through elements containting indvidual media items
 	for (xml_node<> *mediaDict = dict1->first_node("dict"); mediaDict; mediaDict = mediaDict->next_sibling("dict"))
 	{
 		//set the first and last key of the media items meta data
 		xml_node<> *key = mediaDict->first_node("key");
 		xml_node<> *lastkey = mediaDict->last_node("key");
-		
+
 		//Initilize media variables
 		SongNode *song = new SongNode();
-		
+
 		//Loops through intantces of media item
 		bool check = true;
 		while(check == true)
 		{
-			xml_node<> *printkey = key->next_sibling("key"); 
-		
+			xml_node<> *printkey = key->next_sibling("key");
+
 			string keyValue = printkey->value();
-		
+
 			//Ends the loop if it a TV SHOW or MOVIE
 			if(keyValue.compare("TV Show") == 0 || keyValue.compare("Movie") == 0)
 			{
@@ -225,7 +238,7 @@ void MusicTree::populateXML()
 				xml_node<> *name = printkey->next_sibling("string");
 				song->album = name->value();
 			}
-			
+
 			//Ends Loop adds to Vector
 			if(keyValue == lastkey->value())
 			{
@@ -240,9 +253,9 @@ void MusicTree::populateXML()
 			key = key->next_sibling("key");
 		}
 	}
-	
+
 	cout << "Added " << count << " songs to the Music Tree from iTunesMusicLibrary.xml" << endl;
-	
+
 }
 
 //decontructor class

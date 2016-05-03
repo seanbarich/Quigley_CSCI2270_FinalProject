@@ -1,5 +1,5 @@
 #ifndef MUSICTREE_H
-#define MUSICTREE_H 
+#define MUSICTREE_H
 
 struct SongNode{
 	std::string artist;
@@ -8,9 +8,9 @@ struct SongNode{
   SongNode *parent;
   SongNode *left;
   SongNode *right;
-	
+
 	SongNode(){};
-	
+
 	SongNode(std::string _artist, std::string _name, std::string _album)
 	{
 		artist = _artist;
@@ -20,8 +20,8 @@ struct SongNode{
 		left = NULL;
 		right = NULL;
 	}
-	
-};     
+
+};
 
 class MusicTree
 {
@@ -40,8 +40,8 @@ class MusicTree
     protected:
 
     private:
-				void findSong(SongNode *node, std::string name);
-				void printAlbum(SongNode *node, std::string album);
+				bool findSong(SongNode *node, std::string name);
+				bool printAlbum(SongNode *node, std::string album);
 				void printMusicLibrary(SongNode *node);
 				int countSongNodes(SongNode *node);
 				SongNode *roo;
